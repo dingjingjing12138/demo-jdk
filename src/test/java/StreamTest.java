@@ -1,6 +1,11 @@
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.dingjj.collection.stream.Person;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,5 +60,60 @@ public class StreamTest {
         List<String> fiterList = personList.stream().filter(x -> x.getSalary() > 8000).map(Person::getName)
             .collect(Collectors.toList());
         System.out.print("高于8000的员工姓名：" + fiterList);
+    }
+
+    @Test
+    public void testOptions() {
+        String str = "null";
+        System.out.println(Optional.ofNullable(str).orElse("a"));
+    }
+
+    @Test
+    public void compareDate() {
+
+    }
+
+    public static void main(String[] args) {
+
+        String expireDate = "2020-11-09";
+        System.out.println(calculateDate(expireDate));
+    }
+
+    private static final String LONG_TERM = "长期";
+
+    private static String calculateDate(String expireDate) {
+
+        if (LONG_TERM.equals(expireDate)) {
+            return LONG_TERM;
+        }
+        LocalDate now = LocalDate.now();
+        if (expireDate.length() == 10) {
+            DateTimeFormatter sdf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate expiringDate = LocalDate.parse(expireDate, sdf);
+            if (now.isAfter(expiringDate)) {
+                System.out.println("证件过期。。。");
+                return null;
+            }
+        } else {
+            String[] split = expireDate.split("-");
+            LocalDate specialDate = LocalDate
+                .of(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+            if (now.isAfter(specialDate)) {
+                System.out.println("证件过期。。。");
+                return null;
+            }
+        }
+        return expireDate;
+    }
+
+    @Test
+    public void testTime() {
+        long expireAt = System.currentTimeMillis() + 9000 * 1000;
+        Date date = new Date(expireAt);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+        System.out.println(simpleDateFormat.format(date));
+        LambdaQueryWrapper<String> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(String::length, 12);
+        wrapper.like(String::getBytes,99);
     }
 }
